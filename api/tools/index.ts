@@ -1,4 +1,4 @@
-import { getCaseSummary, getMissingCriteria, addCaseNote, approveCase, submitCaseTool, getAuditEvents } from "../_backend/toolsService.js";
+import { getCaseSummary, getMissingCriteria, addCaseNote, approveCase, submitCaseTool, getAuditEvents, runSwarm, getSwarmStatus } from "../_backend/toolsService.js";
 
 const actions: Record<string, (body: any) => Promise<any>> = {
   "get-case-summary": getCaseSummary,
@@ -7,6 +7,8 @@ const actions: Record<string, (body: any) => Promise<any>> = {
   "approve-case": approveCase,
   "submit-case": submitCaseTool,
   "get-audit-events": getAuditEvents,
+  "run-swarm": runSwarm,
+  "get-swarm-status": getSwarmStatus,
 };
 
 export default async function handler(

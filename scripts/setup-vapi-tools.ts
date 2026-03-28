@@ -150,6 +150,59 @@ const tools = [
     },
     server: { url: TOOLS_ENDPOINT },
   },
+  {
+    type: "function",
+    function: {
+      name: "run-swarm",
+      description:
+        "Run the agent swarm on the case. The swarm dynamically dispatches extraction, policy evaluation, drafting, and submission agents in parallel based on dependencies and permissions. Use this to trigger a full re-evaluation of the case or to run specific capabilities.",
+      parameters: {
+        type: "object",
+        properties: {
+          caseId: {
+            type: "string",
+            description: "The case ID.",
+          },
+          permissions: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              "Permission scopes to grant. Include 'draft' to allow letter generation and 'submit' to allow payer submission.",
+          },
+          capabilities: {
+            type: "array",
+            items: {
+              type: "string",
+              enum: ["extract", "policy", "draft", "submit"],
+            },
+            description:
+              "Which swarm capabilities to run. Defaults to all four if omitted. Use ['extract', 'policy'] to just re-evaluate without drafting.",
+          },
+        },
+        required: [],
+      },
+    },
+    server: { url: TOOLS_ENDPOINT },
+  },
+  {
+    type: "function",
+    function: {
+      name: "get-swarm-status",
+      description:
+        "Get the current status of all agents in the swarm, including their capabilities and whether they are idle or busy.",
+      parameters: {
+        type: "object",
+        properties: {
+          caseId: {
+            type: "string",
+            description: "The case ID.",
+          },
+        },
+        required: [],
+      },
+    },
+    server: { url: TOOLS_ENDPOINT },
+  },
 ];
 
 async function setupAssistant() {
@@ -169,17 +222,22 @@ async function setupAssistant() {
         messages: [
           {
             role: "system",
-            content: `You are a prior authorization assistant for AuthFlow AI. You help healthcare staff manage prior authorization cases by phone.
+            content: `You are a prior authorization assistant for AuthFlow AI. You help healthcare staff manage prior authorization cases by phone using an intelligent agent swarm.
 
 You can:
 - Summarize the current case (patient, service, status)
 - Check which policy criteria are missing
 - Add clinical notes and documentation from the caller
+- Run the agent swarm to re-evaluate the case (extraction + policy) after new information is added
 - Approve cases when all criteria are met (only if the caller explicitly asks)
-- Submit approved cases to the payer
-- Review the audit trail
+- Submit approved cases to the payer via the swarm with appropriate permissions
+- Check swarm agent status and review the audit trail
 
-Be concise and professional. When the caller provides clinical information (e.g., "the patient did 6 weeks of PT"), use the add-case-note tool to record it. Always confirm before approving or submitting.
+When the caller provides clinical information (e.g., "the patient did 6 weeks of PT"), use add-case-note to record it, then run-swarm with capabilities ["extract", "policy"] to automatically re-evaluate whether the new info satisfies missing criteria.
+
+When the caller explicitly approves submission, use run-swarm with permissions ["draft", "submit"] to run the full pipeline: extraction, policy check, letter drafting, and submission — all in one coordinated swarm execution.
+
+Be concise and professional. Always confirm before approving or submitting.
 
 Start by greeting the caller and asking how you can help with their prior authorization.`,
           },
