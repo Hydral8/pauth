@@ -39,6 +39,17 @@ export function fetchDemoCase() {
   return request<CaseResponse>("/api/case/demo");
 }
 
+export function loadCase(caseId: string) {
+  return request<CaseResponse>(`/api/case/demo?caseId=${encodeURIComponent(caseId)}`);
+}
+
+export function initCase(caseRecord: import("../types/domain").CaseRecord) {
+  return request<CaseResponse>("/api/case/demo", {
+    method: "POST",
+    body: JSON.stringify({ caseRecord }),
+  });
+}
+
 export function uploadIntakeDocument(payload: IntakeUploadRequest) {
   return request<IntakeUploadResponse>("/api/case/intake", {
     method: "POST",

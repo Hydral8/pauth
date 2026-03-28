@@ -10,6 +10,7 @@ import { IntakePanel } from "../components/intake/IntakePanel";
 import { ReasoningPanel } from "../components/reasoning/ReasoningPanel";
 import { VoicePanel } from "../components/voice/VoicePanel";
 import { useCaseController } from "./useCaseController";
+import { PATIENT_TEMPLATES } from "../lib/patientTemplates";
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -51,7 +52,8 @@ export function App() {
     isVoiceCalling,
     lastVoiceCall,
     submissionError,
-    orchestrate
+    orchestrate,
+    loadNewCase
   } = useCaseController();
 
   const runDemo = useCallback(async () => {
@@ -162,12 +164,34 @@ export function App() {
 
       <div className="tab-content">
         {activeTab === "overview" && (
-          <HeroSection
-            caseRecord={caseRecord}
-            metrics={metrics}
-            onRunDemo={runDemo}
-            actionBusy={isDemoRunning || isSubmitting}
-          />
+          <>
+            <HeroSection
+              caseRecord={caseRecord}
+              metrics={metrics}
+              onRunDemo={runDemo}
+              actionBusy={isDemoRunning || isSubmitting}
+            />
+            <div className="case-picker">
+              <h3>Start a new case</h3>
+              <p>Select a patient to begin a fresh prior authorization workflow with AI-powered analysis.</p>
+              <div className="case-picker-grid">
+                {PATIENT_TEMPLATES.map((template) => (
+                  <button
+                    key={template.id}
+                    className={`case-picker-card ${caseRecord.id === template.id ? "case-picker-active" : ""}`}
+                    onClick={async () => {
+                      await loadNewCase(template.case);
+                      setActiveTab("intake");
+                    }}
+                    disabled={isDemoRunning}
+                  >
+                    <strong>{template.label}</strong>
+                    <p>{template.description}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
         )}
 
         {activeTab === "intake" && (

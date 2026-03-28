@@ -10,6 +10,8 @@ import { applyCaseAction, replaceCaseRecord } from "./caseService.js";
 import { getCaseRecord } from "./caseStore.js";
 import { submitAuthorization } from "./submissionService.js";
 import { classifyIntent } from "./agents/intentClassifier.js";
+import { bootstrapSwarmAgents } from "./swarm/agents";
+import { runSwarmOrchestration } from "./swarm/coordinator";
 
 function now() {
   return new Date().toISOString();
@@ -87,18 +89,28 @@ async function applyVoiceIntent(caseId: string, intent: VoiceIntent): Promise<Ca
   }
 
   if (intent.type === "add_note") {
-    return applyCaseAction(caseId, {
+    // Add the note, then run swarm to re-evaluate policy (may resolve missing criteria)
+    await applyCaseAction(caseId, {
       type: "RESOLVE_MISSING_ITEM",
       payload: {
         note: intent.payload?.note ?? "Failed conservative therapy for 6 weeks documented.",
         source: "voice"
       }
     });
+    bootstrapSwarmAgents();
+    const result = await runSwarmOrchestration(caseId, new Set(), ["extract", "policy"]);
+    return result.caseRecord;
   }
 
   if (intent.type === "approve_submit") {
-    const response = await submitAuthorization(caseId);
-    return response.caseRecord;
+    // Route through swarm with full permissions for draft + submit
+    bootstrapSwarmAgents();
+    const result = await runSwarmOrchestration(
+      caseId,
+      new Set(["draft", "submit"]),
+      ["extract", "policy", "draft", "submit"]
+    );
+    return result.caseRecord;
   }
 
   return getCaseRecord(caseId);

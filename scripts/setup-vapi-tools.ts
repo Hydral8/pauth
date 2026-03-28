@@ -19,7 +19,7 @@ if (!VAPI_KEY || !ASSISTANT_ID || !SERVER_URL) {
   process.exit(1);
 }
 
-const TOOLS_ENDPOINT = `${SERVER_URL}/api/tools`;
+const TOOLS_ENDPOINT = `${SERVER_URL.replace(/\/$/, "")}/api/tools`;
 
 const tools = [
   {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { applyCaseAction, fetchDemoCase, fetchVoiceStatus, parseVoiceCommand, runOrchestration, startVoiceCall, submitCase, uploadIntakeDocument } from "./api";
+import { applyCaseAction, fetchDemoCase, fetchVoiceStatus, initCase, parseVoiceCommand, runOrchestration, startVoiceCall, submitCase, uploadIntakeDocument } from "./api";
 import { createInitialCase } from "../lib/mockData";
 import { getDashboardMetrics } from "../lib/selectors";
 import type { AppAction } from "../types/actions";
@@ -127,6 +127,12 @@ export function useCaseController() {
     return result;
   }
 
+  async function loadNewCase(template: CaseRecord) {
+    const result = await initCase(template);
+    hydrate(result.caseRecord);
+    return result.caseRecord;
+  }
+
   async function placeVoiceCall(phoneNumber: string) {
     const result = await callMutation.mutateAsync({
       caseId: activeCase.id,
@@ -152,6 +158,7 @@ export function useCaseController() {
     isVoiceCalling: callMutation.isPending,
     lastVoiceCall: activeCase.voiceCalls[0],
     orchestrate,
-    isOrchestrating: orchestrateMutation.isPending
+    isOrchestrating: orchestrateMutation.isPending,
+    loadNewCase
   };
 }

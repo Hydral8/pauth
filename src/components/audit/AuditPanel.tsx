@@ -27,6 +27,7 @@ const actorLabels: Record<AuditActor, string> = {
   system: "System",
   extraction_agent: "Extraction agent",
   policy_agent: "Policy agent",
+  swarm_coordinator: "Swarm coordinator",
   drafting_agent: "Drafting agent",
   submission_agent: "Submission agent",
   human: "Reviewer",

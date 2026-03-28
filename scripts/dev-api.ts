@@ -18,6 +18,7 @@ type Handler = (
 const routes: Record<string, Handler> = {
   "GET /api/health": healthHandler,
   "GET /api/case/demo": demoHandler,
+  "POST /api/case/demo": demoHandler,
   "POST /api/case/intake": intakeHandler,
   "POST /api/case/action": actionHandler,
   "POST /api/case/orchestrate": orchestrateHandler,

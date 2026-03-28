@@ -11,8 +11,13 @@ function isDocumentKind(value: unknown): value is SourceDocumentKind {
   return value === "clinical_note" || value === "payer_policy" || value === "lab" || value === "form";
 }
 
-export async function getDemoCase(): Promise<CaseResponse> {
-  return { caseRecord: await getCaseRecord("case-demo-001") };
+export async function getDemoCase(caseId?: string): Promise<CaseResponse> {
+  return { caseRecord: await getCaseRecord(caseId ?? "case-demo-001") };
+}
+
+export async function initCase(caseRecord: CaseRecord): Promise<CaseResponse> {
+  await saveCaseRecord(caseRecord);
+  return { caseRecord };
 }
 
 export async function attachDocument(input: IntakeUploadRequest): Promise<CaseResponse> {
