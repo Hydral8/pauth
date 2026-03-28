@@ -1,7 +1,6 @@
 {
   "name": "authflow-ai",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:api\"",
     "dev:client": "vite --port 3000",
