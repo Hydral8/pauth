@@ -1,4 +1,4 @@
-import { submitAuthorization } from "../backend/submissionService";
+import { submitAuthorization } from "./_backend/submissionService";
 import type { SubmitRequest } from "../src/types/api";
 export default async function handler(
   request: { body: SubmitRequest },

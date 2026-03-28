@@ -1,5 +1,5 @@
-import { applyCaseAction } from "../../backend/caseService";
-import { getCaseRecord } from "../../backend/caseStore";
+import { applyCaseAction } from "../_backend/caseService";
+import { getCaseRecord } from "../_backend/caseStore";
 import type { CaseActionRequest } from "../../src/types/api";
 import type { AppAction } from "../../src/types/actions";
 export default async function handler(
