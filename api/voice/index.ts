@@ -1,9 +1,4 @@
 import { parseVoiceCommand, getVoiceStatus, startVoiceCall } from "../../backend/voiceService";
-
-export const config = {
-  runtime: "nodejs"
-};
-
 export default async function handler(
   request: { body: any; query?: Record<string, string | undefined>; method?: string },
   response: { status: (code: number) => { json: (body: unknown) => void } }

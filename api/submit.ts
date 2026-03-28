@@ -1,10 +1,5 @@
 import { submitAuthorization } from "../backend/submissionService";
 import type { SubmitRequest } from "../src/types/api";
-
-export const config = {
-  runtime: "nodejs"
-};
-
 export default async function handler(
   request: { body: SubmitRequest },
   response: { status: (code: number) => { json: (body: unknown) => void } }

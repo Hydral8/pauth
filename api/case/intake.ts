@@ -1,10 +1,5 @@
 import { attachDocument } from "../../backend/caseService";
 import type { IntakeUploadRequest } from "../../src/types/api";
-
-export const config = {
-  runtime: "nodejs"
-};
-
 export default async function handler(
   request: { body: IntakeUploadRequest },
   response: { status: (code: number) => { json: (body: unknown) => void } }

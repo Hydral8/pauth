@@ -1,6 +1,3 @@
-export const config = {
-  runtime: "nodejs"
-};
 
 export default async function handler(
   request: { body: Record<string, unknown>; query?: { caseId?: string } },
