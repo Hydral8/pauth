@@ -54,21 +54,21 @@ export function applyCaseAction(payload: CaseActionRequest) {
 }
 
 export function parseVoiceCommand(text: string, caseId?: string) {
-  return request<VoiceIntentResponse>("/api/voice/intent", {
+  return request<VoiceIntentResponse>("/api/voice", {
     method: "POST",
-    body: JSON.stringify({ text, caseId })
+    body: JSON.stringify({ action: "intent", text, caseId })
   });
 }
 
 export function fetchVoiceStatus(caseId?: string) {
-  const query = caseId ? `?caseId=${encodeURIComponent(caseId)}` : "";
-  return request<VoiceStatusResponse>(`/api/voice/status${query}`);
+  const query = caseId ? `?caseId=${encodeURIComponent(caseId)}&action=status` : "?action=status";
+  return request<VoiceStatusResponse>(`/api/voice${query}`);
 }
 
 export function startVoiceCall(payload: StartVoiceCallRequest) {
-  return request<StartVoiceCallResponse>("/api/voice/call", {
+  return request<StartVoiceCallResponse>("/api/voice", {
     method: "POST",
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ action: "call", ...payload })
   });
 }
 
@@ -100,5 +100,8 @@ export interface AuditExportResponse {
 }
 
 export function exportAuditLog(caseId: string) {
-  return request<AuditExportResponse>(`/api/audit/export?caseId=${encodeURIComponent(caseId)}`);
+  return request<AuditExportResponse>("/api/case/action", {
+    method: "POST",
+    body: JSON.stringify({ action: { type: "EXPORT_AUDIT" }, caseId })
+  });
 }

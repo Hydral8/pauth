@@ -6,11 +6,9 @@ import actionHandler from "../api/case/action";
 import orchestrateHandler from "../api/case/orchestrate";
 import healthHandler from "../api/health";
 import submitHandler from "../api/submit";
-import auditExportHandler from "../api/audit/export";
-import voiceCallHandler from "../api/voice/call";
-import voiceIntentHandler from "../api/voice/intent";
-import voiceStatusHandler from "../api/voice/status";
+import voiceHandler from "../api/voice/index";
 import voiceWebhookHandler from "../api/voice/webhook";
+import toolsHandler from "../api/tools/index";
 
 type Handler = (
   request: { body: any; query?: Record<string, string | undefined>; method?: string; url?: string },
@@ -24,11 +22,10 @@ const routes: Record<string, Handler> = {
   "POST /api/case/action": actionHandler,
   "POST /api/case/orchestrate": orchestrateHandler,
   "POST /api/submit": submitHandler,
-  "GET /api/audit/export": auditExportHandler,
-  "POST /api/voice/intent": voiceIntentHandler,
-  "GET /api/voice/status": voiceStatusHandler,
-  "POST /api/voice/call": voiceCallHandler,
-  "POST /api/voice/webhook": voiceWebhookHandler
+  "GET /api/voice": voiceHandler,
+  "POST /api/voice": voiceHandler,
+  "POST /api/voice/webhook": voiceWebhookHandler,
+  "POST /api/tools": toolsHandler
 };
 
 function readBody(request: IncomingMessage) {
