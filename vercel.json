@@ -1,4 +1,9 @@
 {
   "framework": "vite",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "backend/**,src/lib/**,src/types/**"
+    }
+  }
 }
