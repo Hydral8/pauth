@@ -1,5 +1,5 @@
-import { chatJSON, isOpenAIConfigured } from "../lib/openai";
-import type { CaseRecord, CriterionStatus, PolicyCriterion, Recommendation } from "../../../src/types/domain";
+import { chatJSON, isOpenAIConfigured } from "../lib/openai.js";
+import type { CaseRecord, CriterionStatus, PolicyCriterion, Recommendation } from "../../../src/types/domain.js";
 
 interface PolicyResult {
   criteria: Array<{

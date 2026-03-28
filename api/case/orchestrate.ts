@@ -1,4 +1,4 @@
-import { runOrchestration } from "../_backend/orchestrator";
+import { runOrchestration } from "../_backend/orchestrator.js";
 
 export default async function handler(
   request: { body: { caseId?: string; permissions?: string[] } },

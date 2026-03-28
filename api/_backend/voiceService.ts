@@ -3,13 +3,13 @@ import type {
   StartVoiceCallResponse,
   VoiceIntentResponse,
   VoiceStatusResponse
-} from "../../src/types/api";
-import type { AppAction } from "../../src/types/actions";
-import type { CaseRecord, VoiceCallRecord, VoiceIntent } from "../../src/types/domain";
-import { applyCaseAction, replaceCaseRecord } from "./caseService";
-import { getCaseRecord } from "./caseStore";
-import { submitAuthorization } from "./submissionService";
-import { classifyIntent } from "./agents/intentClassifier";
+} from "../../src/types/api.js";
+import type { AppAction } from "../../src/types/actions.js";
+import type { CaseRecord, VoiceCallRecord, VoiceIntent } from "../../src/types/domain.js";
+import { applyCaseAction, replaceCaseRecord } from "./caseService.js";
+import { getCaseRecord } from "./caseStore.js";
+import { submitAuthorization } from "./submissionService.js";
+import { classifyIntent } from "./agents/intentClassifier.js";
 
 function now() {
   return new Date().toISOString();

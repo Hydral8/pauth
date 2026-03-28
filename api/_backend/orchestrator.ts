@@ -1,9 +1,9 @@
-import type { AuditActor, CaseRecord } from "../../src/types/domain";
-import { getCaseRecord, saveCaseRecord } from "./caseStore";
-import { runExtractionAgent } from "./agents/extractionAgent";
-import { runPolicyAgent } from "./agents/policyAgent";
-import { runDraftingAgent } from "./agents/draftingAgent";
-import { submitAuthorization } from "./submissionService";
+import type { AuditActor, CaseRecord } from "../../src/types/domain.js";
+import { getCaseRecord, saveCaseRecord } from "./caseStore.js";
+import { runExtractionAgent } from "./agents/extractionAgent.js";
+import { runPolicyAgent } from "./agents/policyAgent.js";
+import { runDraftingAgent } from "./agents/draftingAgent.js";
+import { submitAuthorization } from "./submissionService.js";
 
 interface AgentStep {
   name: string;

@@ -1,5 +1,5 @@
-import { attachDocument } from "../_backend/caseService";
-import type { IntakeUploadRequest } from "../../src/types/api";
+import { attachDocument } from "../_backend/caseService.js";
+import type { IntakeUploadRequest } from "../../src/types/api.js";
 export default async function handler(
   request: { body: IntakeUploadRequest },
   response: { status: (code: number) => { json: (body: unknown) => void } }

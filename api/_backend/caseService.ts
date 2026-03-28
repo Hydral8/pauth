@@ -1,11 +1,11 @@
-import { appReducer } from "../../src/lib/reducer";
-import type { AppAction } from "../../src/types/actions";
-import type { CaseResponse, IntakeUploadRequest } from "../../src/types/api";
-import type { CaseRecord, SourceDocumentKind } from "../../src/types/domain";
-import { getCaseRecord, saveCaseRecord } from "./caseStore";
-import { runExtractionAgent } from "./agents/extractionAgent";
-import { runPolicyAgent } from "./agents/policyAgent";
-import { isOpenAIConfigured } from "./lib/openai";
+import { appReducer } from "../../src/lib/reducer.js";
+import type { AppAction } from "../../src/types/actions.js";
+import type { CaseResponse, IntakeUploadRequest } from "../../src/types/api.js";
+import type { CaseRecord, SourceDocumentKind } from "../../src/types/domain.js";
+import { getCaseRecord, saveCaseRecord } from "./caseStore.js";
+import { runExtractionAgent } from "./agents/extractionAgent.js";
+import { runPolicyAgent } from "./agents/policyAgent.js";
+import { isOpenAIConfigured } from "./lib/openai.js";
 
 function isDocumentKind(value: unknown): value is SourceDocumentKind {
   return value === "clinical_note" || value === "payer_policy" || value === "lab" || value === "form";

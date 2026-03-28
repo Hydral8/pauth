@@ -1,5 +1,5 @@
-import { chatJSON, isOpenAIConfigured } from "../lib/openai";
-import type { VoiceIntent } from "../../../src/types/domain";
+import { chatJSON, isOpenAIConfigured } from "../lib/openai.js";
+import type { VoiceIntent } from "../../../src/types/domain.js";
 
 interface IntentResult {
   type: "summarize" | "explain" | "add_note" | "approve_submit" | "unknown";

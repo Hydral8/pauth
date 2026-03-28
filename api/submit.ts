@@ -1,5 +1,5 @@
-import { submitAuthorization } from "./_backend/submissionService";
-import type { SubmitRequest } from "../src/types/api";
+import { submitAuthorization } from "./_backend/submissionService.js";
+import type { SubmitRequest } from "../src/types/api.js";
 export default async function handler(
   request: { body: SubmitRequest },
   response: { status: (code: number) => { json: (body: unknown) => void } }

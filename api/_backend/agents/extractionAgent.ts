@@ -1,5 +1,5 @@
-import { chatJSON, isOpenAIConfigured } from "../lib/openai";
-import type { ClinicalFact, CaseRecord, SourceDocument } from "../../../src/types/domain";
+import { chatJSON, isOpenAIConfigured } from "../lib/openai.js";
+import type { ClinicalFact, CaseRecord, SourceDocument } from "../../../src/types/domain.js";
 
 interface ExtractionResult {
   facts: Array<{

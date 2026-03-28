@@ -1,6 +1,6 @@
-import { createInitialCase, createMockCaseById } from "../../src/lib/mockData";
-import type { CaseRecord } from "../../src/types/domain";
-import { getDb, isTursoConfigured } from "./lib/turso";
+import { createInitialCase, createMockCaseById } from "../../src/lib/mockData.js";
+import type { CaseRecord } from "../../src/types/domain.js";
+import { getDb, isTursoConfigured } from "./lib/turso.js";
 
 const memoryStore = new Map<string, CaseRecord>();
 

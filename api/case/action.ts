@@ -1,7 +1,7 @@
-import { applyCaseAction } from "../_backend/caseService";
-import { getCaseRecord } from "../_backend/caseStore";
-import type { CaseActionRequest } from "../../src/types/api";
-import type { AppAction } from "../../src/types/actions";
+import { applyCaseAction } from "../_backend/caseService.js";
+import { getCaseRecord } from "../_backend/caseStore.js";
+import type { CaseActionRequest } from "../../src/types/api.js";
+import type { AppAction } from "../../src/types/actions.js";
 export default async function handler(
   request: { body: CaseActionRequest },
   response: { status: (code: number) => { json: (body: unknown) => void } }

@@ -1,5 +1,5 @@
-import { chatText, isOpenAIConfigured } from "../lib/openai";
-import type { CaseRecord } from "../../../src/types/domain";
+import { chatText, isOpenAIConfigured } from "../lib/openai.js";
+import type { CaseRecord } from "../../../src/types/domain.js";
 
 const SYSTEM_PROMPT = `You are a drafting agent for a prior authorization system.
 Generate a concise prior authorization request letter based on the case details.

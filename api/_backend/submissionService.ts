@@ -1,6 +1,6 @@
-import { appReducer } from "../../src/lib/reducer";
-import type { SubmitResponse } from "../../src/types/api";
-import { getCaseRecord, saveCaseRecord } from "./caseStore";
+import { appReducer } from "../../src/lib/reducer.js";
+import type { SubmitResponse } from "../../src/types/api.js";
+import { getCaseRecord, saveCaseRecord } from "./caseStore.js";
 
 function buildAuditExportId(caseId: string) {
   return `audit-${caseId.toLowerCase()}-${Date.now().toString(36)}`;

@@ -11,10 +11,10 @@ import type {
   GetMissingCriteriaResponse,
   SubmitCaseToolRequest,
   SubmitCaseToolResponse
-} from "../../src/types/api";
-import { applyCaseAction } from "./caseService";
-import { getCaseRecord } from "./caseStore";
-import { submitAuthorization } from "./submissionService";
+} from "../../src/types/api.js";
+import { applyCaseAction } from "./caseService.js";
+import { getCaseRecord } from "./caseStore.js";
+import { submitAuthorization } from "./submissionService.js";
 
 function resolveCaseId(caseId?: string) {
   return caseId ?? "case-demo-001";
