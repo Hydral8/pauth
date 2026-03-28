@@ -101,25 +101,25 @@ export function appReducer(state: CaseRecord, action: AppAction): CaseRecord {
         auditLog: pushAudit(state, "voice_router", "Voice command parsed", `Intent detected: ${action.payload.type}.`)
       };
 
-    case "RESOLVE_MISSING_ITEM":
+    case "RESOLVE_MISSING_ITEM": {
+      // Resolve the first missing criterion (dynamic, not hardcoded)
+      const resolvedCriteria = state.criteria.map((criterion) =>
+        criterion.status === "missing"
+          ? { ...criterion, status: "matched" as const, missingReason: undefined }
+          : criterion
+      );
+      const stillMissing = resolvedCriteria.filter((c) => c.status === "missing");
       return {
         ...state,
-        status: "ready",
-        criteria: state.criteria.map((criterion) =>
-          criterion.id === "criterion-5"
-            ? {
-                ...criterion,
-                status: "matched",
-                missingReason: undefined,
-                evidenceFactIds: ["fact-3"]
-              }
-            : criterion
-        ),
+        status: stillMissing.length === 0 ? "ready" : "needs-info",
+        criteria: resolvedCriteria,
         recommendation: {
-          status: "likely_approve",
-          confidence: 97,
-          summary: "All policy requirements are satisfied. The case is ready for human approval.",
-          missingItems: []
+          status: stillMissing.length === 0 ? "likely_approve" : "incomplete",
+          confidence: stillMissing.length === 0 ? 97 : state.recommendation.confidence,
+          summary: stillMissing.length === 0
+            ? "All policy requirements are satisfied. The case is ready for human approval."
+            : state.recommendation.summary,
+          missingItems: stillMissing.map((c) => c.missingReason ?? c.clauseTitle),
         },
         packet: {
           ...state.packet,
@@ -137,6 +137,7 @@ export function appReducer(state: CaseRecord, action: AppAction): CaseRecord {
           action.payload.note
         )
       };
+    }
 
     case "APPROVE_SUBMIT":
       return {

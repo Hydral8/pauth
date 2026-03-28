@@ -17,7 +17,7 @@ export function StatusRail({
         <Badge>{packetStatus}</Badge>
       </div>
       <p className="status-rail-copy">
-        Backend state is authoritative. Every case mutation, submission transition, and voice action now round-trips through serverless API handlers.
+        All state changes round-trip through the API.
       </p>
     </aside>
   );

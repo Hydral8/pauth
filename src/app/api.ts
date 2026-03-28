@@ -78,3 +78,27 @@ export function submitCase(payload: SubmitRequest) {
     body: JSON.stringify(payload)
   });
 }
+
+export interface OrchestrationResponse {
+  caseRecord: import("../types/domain").CaseRecord;
+  stepsRun: string[];
+  gatedAt: string | null;
+}
+
+export function runOrchestration(caseId: string, permissions: string[]) {
+  return request<OrchestrationResponse>("/api/case/orchestrate", {
+    method: "POST",
+    body: JSON.stringify({ caseId, permissions })
+  });
+}
+
+export interface AuditExportResponse {
+  caseId: string;
+  exportedAt: string;
+  events: import("../types/domain").AuditEvent[];
+  totalEvents: number;
+}
+
+export function exportAuditLog(caseId: string) {
+  return request<AuditExportResponse>(`/api/audit/export?caseId=${encodeURIComponent(caseId)}`);
+}

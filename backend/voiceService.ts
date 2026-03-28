@@ -9,6 +9,7 @@ import type { CaseRecord, VoiceCallRecord, VoiceIntent } from "../src/types/doma
 import { applyCaseAction, replaceCaseRecord } from "./caseService";
 import { getCaseRecord } from "./caseStore";
 import { submitAuthorization } from "./submissionService";
+import { classifyIntent } from "./agents/intentClassifier";
 
 function now() {
   return new Date().toISOString();
@@ -29,34 +30,8 @@ function getVoiceConfig() {
   };
 }
 
-function parseVoiceIntent(rawText: string): VoiceIntent {
-  const normalized = rawText.trim().toLowerCase();
-
-  if (normalized.includes("summarize")) {
-    return { type: "summarize", rawText };
-  }
-
-  if (normalized.includes("why") || normalized.includes("explain") || normalized.includes("missing")) {
-    return { type: "explain", rawText };
-  }
-
-  if (normalized.includes("add note") || normalized.includes("therapy") || normalized.includes("pt")) {
-    const extractedNote = rawText.match(/add note[:\s-]*(.+)$/i)?.[1]?.trim();
-
-    return {
-      type: "add_note",
-      rawText,
-      payload: {
-        note: extractedNote || "Failed conservative therapy for 6 weeks documented."
-      }
-    };
-  }
-
-  if (normalized.includes("approve") || normalized.includes("send") || normalized.includes("submit")) {
-    return { type: "approve_submit", rawText };
-  }
-
-  return { type: "unknown", rawText };
+async function parseVoiceIntent(rawText: string): Promise<VoiceIntent> {
+  return classifyIntent(rawText);
 }
 
 function buildReasoning(caseRecord: CaseRecord) {
@@ -131,7 +106,7 @@ async function applyVoiceIntent(caseId: string, intent: VoiceIntent): Promise<Ca
 
 export async function parseVoiceCommand(caseId: string | undefined, text: string): Promise<VoiceIntentResponse> {
   const activeCaseId = caseId ?? "case-demo-001";
-  const intent = parseVoiceIntent(text);
+  const intent = await parseVoiceIntent(text);
   const caseRecord = await applyVoiceIntent(activeCaseId, intent);
   const reasoning = buildReasoning(caseRecord);
 
@@ -264,4 +239,62 @@ export async function startVoiceCall(input: StartVoiceCallRequest): Promise<Star
     caseRecord: nextCase,
     call: finalCall
   };
+}
+
+export async function syncVoiceWebhook(payload: Record<string, unknown>, caseIdHint?: string) {
+  const bodyCall = (payload.call ?? payload.message ?? {}) as Record<string, unknown>;
+  const variableValues = (bodyCall.assistantOverrides as { variableValues?: Record<string, unknown> } | undefined)?.variableValues;
+  const caseId =
+    caseIdHint ??
+    (typeof variableValues?.case_id === "string" ? variableValues.case_id : undefined) ??
+    (typeof payload.caseId === "string" ? payload.caseId : undefined) ??
+    "case-demo-001";
+
+  const caseRecord = await getCaseRecord(caseId);
+  const externalCallId =
+    (typeof bodyCall.id === "string" ? bodyCall.id : undefined) ??
+    (typeof payload.callId === "string" ? payload.callId : undefined);
+  const status =
+    (typeof bodyCall.status === "string" ? bodyCall.status : undefined) ??
+    (typeof payload.status === "string" ? payload.status : undefined) ??
+    "unknown";
+
+  if (!externalCallId) {
+    return caseRecord;
+  }
+
+  const existing = caseRecord.voiceCalls.find((call) => call.externalCallId === externalCallId);
+  if (!existing) {
+    return caseRecord;
+  }
+
+  const nextCall: VoiceCallRecord = {
+    ...existing,
+    status: status as VoiceCallRecord["status"],
+    updatedAt: now(),
+    summary:
+      (typeof (bodyCall.analysis as { summary?: unknown } | undefined)?.summary === "string"
+        ? ((bodyCall.analysis as { summary?: string }).summary as string)
+        : existing.summary) ?? existing.summary,
+    transcript:
+      (typeof payload.transcript === "string" ? payload.transcript : existing.transcript) ?? existing.transcript
+  };
+
+  const nextCase: CaseRecord = {
+    ...caseRecord,
+    voiceCalls: caseRecord.voiceCalls.map((call) => (call.externalCallId === externalCallId ? nextCall : call)),
+    auditLog: [
+      ...caseRecord.auditLog,
+      {
+        id: `audit-${caseRecord.auditLog.length + 1}`,
+        at: now(),
+        actor: "voice_router",
+        title: "Voice call updated",
+        detail: `Call ${externalCallId} changed to ${nextCall.status}.`
+      }
+    ]
+  };
+
+  await replaceCaseRecord(nextCase);
+  return nextCase;
 }

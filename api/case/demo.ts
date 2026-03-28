@@ -1,10 +1,9 @@
 import { getDemoCase } from "../../backend/caseService";
-import { json } from "../../backend/http";
 
 export const config = {
   runtime: "nodejs"
 };
 
-export default async function handler() {
-  return json(200, await getDemoCase());
+export default async function handler(_request: unknown, response: { status: (code: number) => { json: (body: unknown) => void } }) {
+  response.status(200).json(await getDemoCase());
 }

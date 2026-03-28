@@ -21,9 +21,18 @@ export async function submitAuthorization(caseId: string): Promise<SubmitRespons
     };
   }
 
-  const approvedCase = caseRecord.status === "approved" || caseRecord.status === "submitting" || caseRecord.status === "submitted"
-    ? caseRecord
-    : appReducer(caseRecord, { type: "APPROVE_SUBMIT", payload: { source: "manual" } });
+  if (!["approved", "submitting", "submitted"].includes(caseRecord.status)) {
+    return {
+      status: "blocked",
+      executionState: "blocked",
+      auditExportId: buildAuditExportId(caseId),
+      blockerCode: "approval_required",
+      blockerDetail: "Explicit approval is required before submission.",
+      caseRecord
+    };
+  }
+
+  const approvedCase = caseRecord;
   const submittingCase = appReducer(approvedCase, { type: "SUBMISSION_STARTED" });
   const submittedCase = appReducer(submittingCase, { type: "SUBMISSION_SUCCEEDED" });
   const confirmationId = `CONF-${caseId.toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;

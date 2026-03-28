@@ -1,5 +1,6 @@
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
+import { ConfidenceGauge } from "../ui/ConfidenceGauge";
 import { MetricTile } from "../ui/MetricTile";
 import type { CaseRecord } from "../../types/domain";
 
@@ -28,10 +29,10 @@ export function HeroSection({
     <header className="hero">
       <div className="hero-grid">
         <Card className="hero-copy">
-          <p className="section-kicker">From intake to submission in minutes</p>
-          <h2>A voice-controlled authorization cockpit with policy reasoning and auditability.</h2>
+          <p className="section-kicker">Prior Authorization</p>
+          <h2>Intake to submission, in minutes.</h2>
           <p className="hero-text">
-            Demo-first architecture for prior auth: structured intake, policy matching, approval gating, and a visible submission trail.
+            Structured case intake, criteria matching, approval workflow, and voice control in one workspace.
           </p>
           <div className="hero-actions">
             <Button onClick={onRunDemo} disabled={actionBusy}>
@@ -56,10 +57,10 @@ export function HeroSection({
             <p>{caseRecord.requestedService.label}</p>
           </div>
           <div className="decision-ring-wrap">
-            <div className="decision-ring">
-              <span>{metrics.confidence}%</span>
-              <small>{caseRecord.recommendation.status === "incomplete" ? "Needs one update" : "Likely approved"}</small>
-            </div>
+            <ConfidenceGauge
+              value={metrics.confidence}
+              label={caseRecord.recommendation.status === "incomplete" ? "Needs update" : "Likely approved"}
+            />
             <div className="decision-notes">
               <MetricTile label="Matched criteria">
                 {metrics.matchedCriteria} / {metrics.totalCriteria}

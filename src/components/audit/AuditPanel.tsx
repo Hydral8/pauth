@@ -55,8 +55,8 @@ export function AuditPanel({
   return (
     <Panel>
       <SectionHeader
-        step="Step 5-6"
-        title="Approval and Agent Execution"
+        step="Approval"
+        title="Review & Submit"
         badge={<Badge tone={isSubmitted ? "success" : isBlocked ? "warning" : "default"}>{packetLabels[caseRecord.packet.status]}</Badge>}
       />
       <div className="audit-grid">
@@ -104,7 +104,7 @@ export function AuditPanel({
         <Card>
           <div className="panel-title-row">
             <h4>Execution status</h4>
-            <Badge>Live handoff</Badge>
+            <Badge>Progress</Badge>
           </div>
           <div className="execution-list">
             <div className={`execution-step ${caseRecord.packet.status !== "not_ready" ? "is-complete" : ""}`}>
@@ -144,7 +144,7 @@ export function AuditPanel({
         <Card>
           <div className="panel-title-row">
             <h4>Replay steps</h4>
-            <Badge>Recent chain</Badge>
+            <Badge>Recent</Badge>
           </div>
           <div className="replay-list">
             {replaySteps.map((event, index) => (
@@ -163,7 +163,7 @@ export function AuditPanel({
         <Card>
           <div className="panel-title-row">
             <h4>Audit timeline</h4>
-            <Badge>Replay ready</Badge>
+            <Badge>{timeline.length} events</Badge>
           </div>
           <ul className="timeline-list">
             {timeline.map((event) => (

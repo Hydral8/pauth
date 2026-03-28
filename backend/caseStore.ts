@@ -1,6 +1,8 @@
 import { createInitialCase, createMockCaseById } from "../src/lib/mockData";
 import type { CaseRecord } from "../src/types/domain";
-import { getDb } from "./lib/turso";
+import { getDb, isTursoConfigured } from "./lib/turso";
+
+const memoryStore = new Map<string, CaseRecord>();
 
 function now() {
   return new Date().toISOString();
@@ -11,6 +13,18 @@ function parseCaseRecord(value: string): CaseRecord {
 }
 
 export async function getCaseRecord(caseId = "case-demo-001"): Promise<CaseRecord> {
+  if (!isTursoConfigured()) {
+    const existing = memoryStore.get(caseId);
+    if (existing) {
+      return JSON.parse(JSON.stringify(existing)) as CaseRecord;
+    }
+
+    const seededCase = caseId === "case-demo-001" ? createInitialCase() : createMockCaseById(caseId);
+    const nextCase = { ...seededCase, id: caseId };
+    memoryStore.set(caseId, nextCase);
+    return JSON.parse(JSON.stringify(nextCase)) as CaseRecord;
+  }
+
   const db = await getDb();
   const result = await db.execute({
     sql: "SELECT payload FROM authflow_cases WHERE id = ?",
@@ -28,6 +42,11 @@ export async function getCaseRecord(caseId = "case-demo-001"): Promise<CaseRecor
 }
 
 export async function saveCaseRecord(caseRecord: CaseRecord) {
+  if (!isTursoConfigured()) {
+    memoryStore.set(caseRecord.id, JSON.parse(JSON.stringify(caseRecord)) as CaseRecord);
+    return;
+  }
+
   const db = await getDb();
   await db.execute({
     sql: `

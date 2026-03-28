@@ -6,13 +6,12 @@ export function AppHeader({ backendOnline }: { backendOnline: boolean }) {
       <div className="brand-lockup">
         <div className="brand-mark" />
         <div>
-          <p className="eyebrow">Prior Auth Operator</p>
+          <p className="eyebrow">AI Prior Auth Operator</p>
           <h1>AuthFlow AI</h1>
         </div>
       </div>
       <div className="topbar-status">
-        <Badge tone="live">TanStack frontend</Badge>
-        <Badge tone={backendOnline ? "success" : "warning"}>{backendOnline ? "Working backend" : "Backend unavailable"}</Badge>
+        <Badge tone={backendOnline ? "success" : "warning"}>{backendOnline ? "Connected" : "Offline"}</Badge>
       </div>
     </nav>
   );

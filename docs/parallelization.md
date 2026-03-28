@@ -33,20 +33,22 @@
 ## Backend agents
 
 ### Agent B1: Intake and case API
-- Owns `server/routes/case.ts`
-- Owns `server/services/caseService.ts`
+- Owns `api/case/*`
+- Owns `backend/caseService.ts`
+- Owns `backend/caseStore.ts`
 - Responsible for demo case retrieval, intake upload metadata flow, and canonical case payload shape
 - Maintains alignment with `CaseRecord`
 
 ### Agent B2: Reasoning and voice API
-- Owns `server/routes/voice.ts`
-- Owns `server/services/voiceService.ts`
+- Owns `api/voice/*`
+- Owns `backend/voiceService.ts`
 - Responsible for voice intent parsing, reasoning explanations, and command response payloads
+- Responsible for Vapi integration and webhook handling
 - Must return data in the shared API response types
 
 ### Agent B3: Submission and audit API
-- Owns `server/routes/submission.ts`
-- Owns `server/services/submissionService.ts`
+- Owns `api/submit.ts`
+- Owns `backend/submissionService.ts`
 - Responsible for approval gating, submit endpoint behavior, confirmation ids, and audit export wiring
 - Owns backend-side execution status semantics
 
@@ -55,8 +57,9 @@
 - Frontend source of truth:
   - `src/types/domain.ts`
   - `src/types/actions.ts`
+  - `src/types/api.ts`
 - Backend source of truth:
-  - `server/types/api.ts`
+  - `src/types/api.ts`
 - If backend needs a new payload field, update the shared type first, then route/service code
 - Do not duplicate request or response interfaces inside route files
 
@@ -67,7 +70,7 @@
 - Each agent edits only its owned folder plus tests for that folder
 - Global CSS tokens live only in `src/styles/tokens.css`
 - Mock/demo content lives in service or mock data files, never inside UI primitives
-- Routes stay thin; business logic belongs in services
+- Serverless handlers stay thin; business logic belongs in `backend/*`
 - Services must return typed objects, not raw Express responses
 - No agent should add a second state model or alternate API shape
 

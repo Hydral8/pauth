@@ -77,6 +77,7 @@ export interface Recommendation {
 export interface AuthPacket {
   status: "not_ready" | "drafted" | "approved" | "submitted";
   formName: string;
+  formContent?: string;
   attachments: string[];
   generatedAt?: string;
 }

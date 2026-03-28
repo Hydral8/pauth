@@ -81,3 +81,66 @@ export interface StartVoiceCallResponse {
   caseRecord: CaseRecord;
   call?: VoiceCallRecord;
 }
+
+export interface ToolRequestBase {
+  caseId?: string;
+}
+
+export interface GetCaseSummaryRequest extends ToolRequestBase {}
+
+export interface GetCaseSummaryResponse {
+  caseId: string;
+  patientName: string;
+  requestedService: string;
+  payer: string;
+  caseStatus: CaseRecord["status"];
+  recommendationStatus: CaseRecord["recommendation"]["status"];
+  confidence: number;
+  summary: string;
+}
+
+export interface GetMissingCriteriaRequest extends ToolRequestBase {}
+
+export interface GetMissingCriteriaResponse {
+  caseId: string;
+  missingCount: number;
+  missingCriteria: Array<{
+    id: string;
+    clauseTitle: string;
+    missingReason: string;
+  }>;
+  nextStep: string;
+}
+
+export interface AddCaseNoteRequest extends ToolRequestBase {
+  note: string;
+}
+
+export interface AddCaseNoteResponse {
+  caseRecord: CaseRecord;
+  recordedNote: string;
+  status: "recorded";
+}
+
+export interface ApproveCaseRequest extends ToolRequestBase {
+  source?: "voice" | "manual";
+}
+
+export interface ApproveCaseResponse {
+  caseRecord: CaseRecord;
+  status: "approved" | "blocked";
+  blockerDetail?: string;
+}
+
+export interface SubmitCaseToolRequest extends ToolRequestBase {}
+
+export interface SubmitCaseToolResponse extends SubmitResponse {}
+
+export interface GetAuditEventsRequest extends ToolRequestBase {
+  limit?: number;
+}
+
+export interface GetAuditEventsResponse {
+  caseId: string;
+  events: AuditEvent[];
+}

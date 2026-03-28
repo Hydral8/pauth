@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { applyCaseAction, fetchDemoCase, fetchVoiceStatus, parseVoiceCommand, startVoiceCall, submitCase, uploadIntakeDocument } from "./api";
+import { applyCaseAction, fetchDemoCase, fetchVoiceStatus, parseVoiceCommand, runOrchestration, startVoiceCall, submitCase, uploadIntakeDocument } from "./api";
 import { createInitialCase } from "../lib/mockData";
 import { getDashboardMetrics } from "../lib/selectors";
 import type { AppAction } from "../types/actions";
@@ -16,7 +16,13 @@ export function useCaseController() {
     retry: false
   });
 
-  const activeCase = caseQuery.data?.caseRecord ?? caseRecord;
+  useEffect(() => {
+    if (caseQuery.data?.caseRecord) {
+      setCaseRecord(caseQuery.data.caseRecord);
+    }
+  }, [caseQuery.data]);
+
+  const activeCase = caseRecord;
 
   const voiceStatusQuery = useQuery({
     queryKey: ["voice-status", activeCase.id],
@@ -42,6 +48,11 @@ export function useCaseController() {
 
   const submitMutation = useMutation({
     mutationFn: submitCase
+  });
+
+  const orchestrateMutation = useMutation({
+    mutationFn: ({ caseId, permissions }: { caseId: string; permissions: string[] }) =>
+      runOrchestration(caseId, permissions)
   });
 
   const metrics = useMemo(() => getDashboardMetrics(activeCase), [activeCase]);
@@ -107,6 +118,15 @@ export function useCaseController() {
     hydrate(result.caseRecord);
   }
 
+  async function orchestrate(permissions: string[]) {
+    const result = await orchestrateMutation.mutateAsync({
+      caseId: activeCase.id,
+      permissions
+    });
+    hydrate(result.caseRecord);
+    return result;
+  }
+
   async function placeVoiceCall(phoneNumber: string) {
     const result = await callMutation.mutateAsync({
       caseId: activeCase.id,
@@ -130,6 +150,8 @@ export function useCaseController() {
     submissionError,
     voiceStatus: voiceStatusQuery.data,
     isVoiceCalling: callMutation.isPending,
-    lastVoiceCall: activeCase.voiceCalls[0]
+    lastVoiceCall: activeCase.voiceCalls[0],
+    orchestrate,
+    isOrchestrating: orchestrateMutation.isPending
   };
 }

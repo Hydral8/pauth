@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Card } from "../ui/Card";
@@ -17,60 +18,94 @@ export function ReasoningPanel({
   dispatch: AppActionHandler;
 }) {
   const reasoning = getReasoningViewModel(caseRecord);
+  const [expandedFacts, setExpandedFacts] = useState<Set<string>>(new Set());
+  const [expandedCriteria, setExpandedCriteria] = useState<Set<string>>(new Set());
+
+  function toggleFact(id: string) {
+    setExpandedFacts((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function toggleCriterion(id: string) {
+    setExpandedCriteria((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
 
   return (
     <>
       <Panel>
         <SectionHeader
-          step="Step 2"
-          title="Live Reasoning"
-          badge={<Badge tone="live">{reasoning.summary.totalCriteria} clauses analyzed</Badge>}
+          step="Reasoning"
+          title="Clinical Reasoning"
+          badge={<Badge tone="live">{reasoning.summary.totalCriteria} criteria</Badge>}
         />
         <div className="reasoning-grid">
           <Card>
             <div className="panel-title-row">
               <h4>Extracted Clinical Facts</h4>
-              <Badge>Source-linked</Badge>
+              <Badge>{reasoning.facts.length} facts</Badge>
             </div>
             <ul className="data-list">
-              {reasoning.facts.map((fact) => (
-                <li key={fact.id} className="fact-row">
-                  <div className="list-copy">
-                    <strong>{fact.label}</strong>
-                    <p>
-                      {fact.documentTitle}
-                      {fact.evidenceQuote ? ` • "${fact.evidenceQuote}"` : ""}
-                    </p>
-                    <div className="evidence-pill-row">
-                      <span className="evidence-pill">{fact.linkedCriteriaCount} linked criteria</span>
-                      {fact.linkedCriteriaTitles.map((title) => (
-                        <span key={title} className="evidence-pill evidence-pill-muted">
-                          {title}
-                        </span>
-                      ))}
+              {reasoning.facts.map((fact) => {
+                const isOpen = expandedFacts.has(fact.id);
+                return (
+                  <li key={fact.id} className="expandable-row" onClick={() => toggleFact(fact.id)}>
+                    <div className="expandable-header">
+                      <svg className={`expand-chevron ${isOpen ? "expand-open" : ""}`} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="6 4 10 8 6 12" /></svg>
+                      <strong>{fact.label}</strong>
+                      <span className="fact-tag">{fact.sourceLabel}</span>
                     </div>
-                  </div>
-                  <span className="fact-tag">{fact.sourceLabel}</span>
-                </li>
-              ))}
+                    {isOpen && (
+                      <div className="expandable-body">
+                        <p>
+                          {fact.documentTitle}
+                          {fact.evidenceQuote ? ` "${fact.evidenceQuote}"` : ""}
+                        </p>
+                        <div className="evidence-pill-row">
+                          <span className="evidence-pill">{fact.linkedCriteriaCount} linked criteria</span>
+                          {fact.linkedCriteriaTitles.map((title) => (
+                            <span key={title} className="evidence-pill evidence-pill-muted">
+                              {title}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </Card>
           <Card>
             <div className="panel-title-row">
               <h4>Policy Criteria Checklist</h4>
-              <Badge>Line-by-line match</Badge>
+              <Badge>{reasoning.criteria.length} clauses</Badge>
             </div>
             <ul className="data-list">
-              {reasoning.criteria.map((criterion) => (
-                <li key={criterion.id} className="criterion-row">
-                  <div className="list-copy">
-                    <strong>{criterion.clauseTitle}</strong>
-                    <p>{criterion.clauseText}</p>
-                    <p className="criterion-detail">{criterion.evidenceSummary}</p>
-                  </div>
-                  <span className={`criterion-status criterion-${criterion.status}`}>{criterion.status}</span>
-                </li>
-              ))}
+              {reasoning.criteria.map((criterion) => {
+                const isOpen = expandedCriteria.has(criterion.id);
+                return (
+                  <li key={criterion.id} className="expandable-row" onClick={() => toggleCriterion(criterion.id)}>
+                    <div className="expandable-header">
+                      <svg className={`expand-chevron ${isOpen ? "expand-open" : ""}`} width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="6 4 10 8 6 12" /></svg>
+                      <strong>{criterion.clauseTitle}</strong>
+                      <span className={`criterion-status criterion-${criterion.status}`}>{criterion.status}</span>
+                    </div>
+                    {isOpen && (
+                      <div className="expandable-body">
+                        <p>{criterion.clauseText}</p>
+                        <p className="criterion-detail">{criterion.evidenceSummary}</p>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </Card>
           <Card className="reasoning-wide-card">
@@ -107,7 +142,7 @@ export function ReasoningPanel({
 
       <Panel>
         <SectionHeader
-          step="Step 3"
+          step="Decision"
           title="Recommendation"
           badge={<Badge tone={reasoning.summary.recommendationTone}>{caseRecord.status}</Badge>}
         />
