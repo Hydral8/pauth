@@ -18,7 +18,8 @@ export type AuditActor =
   | "drafting_agent"
   | "submission_agent"
   | "human"
-  | "voice_router";
+  | "voice_router"
+  | "swarm_coordinator";
 
 export interface PatientInfo {
   id: string;
