@@ -7,12 +7,14 @@
     "dev:client": "vite --port 3000",
     "dev:api": "node --import tsx scripts/dev-api.ts",
     "build": "tsc -b && vite build",
-    "start:api": "node --import tsx scripts/dev-api.ts"
+    "start:api": "node --import tsx scripts/dev-api.ts",
+    "setup:vapi": "node --import tsx scripts/setup-vapi-tools.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-router": "^1.114.0",
+    "dotenv": "^17.3.1",
     "openai": "^6.33.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
