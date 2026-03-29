@@ -88,6 +88,21 @@ export function ReasoningPanel({
               <h4>Policy Criteria Checklist</h4>
               <Badge>{reasoning.criteria.length} clauses</Badge>
             </div>
+            {(caseRecord.requestedService.cptCode || caseRecord.requestedService.icd10Codes.length > 0) && (
+              <div className="intake-chip-row" style={{ marginTop: 8 }}>
+                {caseRecord.requestedService.cptCode && (
+                  <span className="fact-tag">CPT {caseRecord.requestedService.cptCode}</span>
+                )}
+                {caseRecord.requestedService.icd10Codes.map((code) => (
+                  <span key={code} className="evidence-pill">{code}</span>
+                ))}
+                {caseRecord.patient.diagnosis
+                  .filter((d) => !caseRecord.requestedService.icd10Codes.includes(d))
+                  .map((code) => (
+                    <span key={code} className="evidence-pill evidence-pill-muted">{code}</span>
+                  ))}
+              </div>
+            )}
             <ul className="data-list">
               {reasoning.criteria.map((criterion) => {
                 const isOpen = expandedCriteria.has(criterion.id);
