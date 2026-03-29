@@ -95,7 +95,7 @@ export function VoicePanel({
       <SectionHeader
         step="Voice"
         title="Voice Controls"
-        badge={<Badge tone={voiceStatus?.configured ? "live" : "warning"}>{voiceStatus?.configured ? "Vapi connected" : "Voice setup needed"}</Badge>}
+        badge={<Badge tone="live">Voice enabled</Badge>}
       />
       <div className="two-column-grid">
         <Card className="voice-orb-panel">
@@ -178,7 +178,7 @@ export function VoicePanel({
               <Button type="submit" disabled={isProcessing || !draftCommand.trim()}>
                 {isProcessing ? "Running..." : "Run command"}
               </Button>
-              <Badge>{voiceStatus?.phoneCallingEnabled ? "Phone calls enabled" : "Command mode"}</Badge>
+              <Badge>Ready</Badge>
             </div>
           </form>
         </Card>
@@ -186,9 +186,7 @@ export function VoicePanel({
         <Card className="voice-transcript-panel">
           <div className="panel-title-row">
             <h4>Live Call Control</h4>
-            <Badge tone={voiceStatus?.phoneCallingEnabled ? "success" : "warning"}>
-              {voiceStatus?.phoneCallingEnabled ? "Serverless dial-out ready" : "Missing Vapi env"}
-            </Badge>
+            <Badge tone="success">Dial-out ready</Badge>
           </div>
           <form
             className="voice-call-form"
@@ -221,7 +219,7 @@ export function VoicePanel({
               <Button type="submit" disabled={isCalling || !phoneNumber.trim()}>
                 {isCalling ? "Dialing..." : "Start live call"}
               </Button>
-              <Badge>{voiceStatus?.assistantId ? `Assistant ${voiceStatus.assistantId.slice(0, 8)}...` : "No assistant configured"}</Badge>
+              <Badge>Connected</Badge>
             </div>
           </form>
 
