@@ -17,15 +17,21 @@ export default async function handler(
 ) {
   const body = request.body ?? {};
 
-  // Vapi tool call format: { message: { type: "tool-calls", toolCallList: [...] } }
+  // Vapi tool call format: { message: { type: "tool-calls", toolCallList: [...], call: { assistantOverrides: ... } } }
   const vapiMessage = body.message;
   if (vapiMessage?.type === "tool-calls" && Array.isArray(vapiMessage.toolCallList)) {
+    // Extract case ID from Vapi call context
+    const callCaseId = vapiMessage.call?.assistantOverrides?.variableValues?.case_id;
     const results = [];
     for (const toolCall of vapiMessage.toolCallList) {
       const name = toolCall.function?.name;
       const args = typeof toolCall.function?.arguments === "string"
         ? JSON.parse(toolCall.function.arguments)
         : toolCall.function?.arguments ?? {};
+      // Inject case ID from call context if not explicitly provided
+      if (callCaseId && !args.caseId) {
+        args.caseId = callCaseId;
+      }
       const fn = name ? actions[name] : undefined;
       if (fn) {
         const result = await fn(args);

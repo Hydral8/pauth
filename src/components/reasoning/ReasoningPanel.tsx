@@ -20,6 +20,7 @@ export function ReasoningPanel({
   const reasoning = getReasoningViewModel(caseRecord);
   const [expandedFacts, setExpandedFacts] = useState<Set<string>>(new Set());
   const [expandedCriteria, setExpandedCriteria] = useState<Set<string>>(new Set());
+  const [explanation, setExplanation] = useState<string | null>(null);
 
   function toggleFact(id: string) {
     setExpandedFacts((prev) => {
@@ -170,9 +171,21 @@ export function ReasoningPanel({
                 ? "Human approval remains gated until the missing documentation is attached."
                 : `ICD-10: ${caseRecord.requestedService.icd10Codes.join(", ")}`}
             </p>
-            <Button variant="secondary" onClick={() => dispatch({ type: "EXPLAIN_DECISION" })}>
+            <Button variant="secondary" onClick={() => {
+              const matched = reasoning.criteria.filter((c) => c.status === "matched");
+              const missing = reasoning.criteria.filter((c) => c.status === "missing");
+              const warnings = reasoning.criteria.filter((c) => c.status === "warning");
+              const lines = [
+                `${matched.length} of ${reasoning.criteria.length} policy criteria are satisfied.`,
+                ...missing.map((c) => `Missing: ${c.clauseTitle} — ${c.missingReason ?? c.clauseText}`),
+                ...warnings.map((c) => `Warning: ${c.clauseTitle} — ${c.missingReason ?? c.clauseText}`),
+                caseRecord.recommendation.summary,
+              ];
+              setExplanation(lines.join("\n"));
+            }}>
               Explain decision
             </Button>
+            {explanation && <p style={{ whiteSpace: "pre-line", marginTop: 8 }}>{explanation}</p>}
           </Card>
         </div>
       </Panel>
